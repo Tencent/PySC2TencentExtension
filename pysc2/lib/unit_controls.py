@@ -70,8 +70,25 @@ class UnitIntAttr(collections.namedtuple("UnitInt64", [
         self.assigned_harvesters,
         self.ideal_harvesters], dtype=int64)
 
+class UnitOrders(collections.namedtuple("UnitOrders", [
+    "ability_id", "target_tag", "target_pos_x", 
+    "target_pos_y", "target_pos_z", "progress"])):
+  """the set of unit orders  """
+  __slots__ = ()
+
+  @property
+  def np_array(self):
+    return np.array([
+        self.ability_id,
+        self.target_tag,
+        self.target_pos_x,
+        self.target_pos_y,
+        self.target_pos_z,
+        self.progress
+    ], dtype=float)
+
 class Unit(collections.namedtuple("unit", [
-    "bool_attr", "int_attr", "float_attr"])):
+    "bool_attr", "int_attr", "float_attr", "orders"])):
   """The definition of unit"""
   __slots__ = ()
 
@@ -101,10 +118,12 @@ class Unit(collections.namedtuple("unit", [
     uflag = assemble_bool(u)
     ufloat = assemble_float(u)
     uint = assemble_int(u)
-    return super(Unit, cls).__new__(cls, 
+    uorders = assemble_orders(u)
+    return super(Unit, cls).__new__(cls,
         bool_attr=uflag,
         int_attr=uint,
-        float_attr=ufloat)
+        float_attr=ufloat,
+        orders=uorders)
 
 def assemble_bool(u):
   return UnitFlags(is_selected=u.is_selected, 
@@ -145,3 +164,14 @@ def assemble_int(u):
       assigned_harvesters=u.assigned_harvesters,
       ideal_harvesters=u.ideal_harvesters)
 
+def assemble_orders(u):
+  orders = []
+  for o in u.orders:
+    uo = UnitOrders(ability_id=o.ability_id,
+        target_tag=o.target_unit_tag,
+        target_pos_x=o.target_world_space_pos.x,
+        target_pos_y=o.target_world_space_pos.y,
+        target_pos_z=o.target_world_space_pos.z,
+        progress=o.progress)
+    orders.append(uo)
+  return orders
