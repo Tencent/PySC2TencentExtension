@@ -32,6 +32,7 @@ from pysc2.lib import stopwatch
 from pysc2.lib import transform
 
 from s2clientprotocol import raw_pb2 as sc_raw
+from pysc2.lib import unit_controls
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 sw = stopwatch.sw
@@ -683,6 +684,7 @@ class Features(object):
         "player": (len(Player),),  # pytype: disable=wrong-arg-types
         "score_cumulative": (len(ScoreCumulative),),  # pytype: disable=wrong-arg-types
         "single_select": (0, len(UnitLayer)),  # Only (n, 7) for n in (0, 1).  # pytype: disable=wrong-arg-types
+        # "units": [n],  units have an array of object Unit which define in unit_control.py
     })
 
     aif = self._agent_interface_format
@@ -886,8 +888,15 @@ class Features(object):
 
     out["available_actions"] = np.array(self.available_actions(obs.observation),
                                         dtype=np.int32)
-
+    out["units"] = self.transform_unit_control(obs)
     return out
+
+  @sw.decorate
+  def transform_unit_control(self, obs):
+    units = []
+    for u in obs.raw_data.units:
+      units.append(unit_controls.Unit(u=u))
+    return units
 
   @sw.decorate
   def available_actions(self, obs):

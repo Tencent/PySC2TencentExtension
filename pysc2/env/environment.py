@@ -159,3 +159,6 @@ class Base(object):  # pytype: disable=ignored-abstractmethod
   def __del__(self):
     self.close()
 
+  @property
+  def unwrapped(self):
+    return self

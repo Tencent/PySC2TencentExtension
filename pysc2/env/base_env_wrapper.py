@@ -45,5 +45,9 @@ class BaseEnvWrapper(environment.Base):
     return self._env.save_replay(*args, **kwargs)
 
   @property
+  def unwrapped(self):
+    return self._env.unwrapped
+
+  @property
   def state(self):
     return self._env.state

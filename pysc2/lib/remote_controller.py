@@ -210,6 +210,7 @@ class RemoteController(object):
   @sw.decorate
   def actions(self, req_action):
     """Send a `sc_pb.RequestAction`, which may include multiple actions."""
+    #print("act_req=", req_action)
     return self._client.send(action=req_action)
 
   def act(self, action):
@@ -224,6 +225,11 @@ class RemoteController(object):
           channel=sc_pb.ActionChat.Broadcast, message=message)
       action = sc_pb.Action(action_chat=action_chat)
       return self.act(action)
+
+  def acts(self, act_list):
+    #print('actions bef=', act_list)
+    if len(act_list) > 0:
+      return self.actions(sc_pb.RequestAction(actions=act_list))
 
   @valid_status(Status.in_game, Status.ended)
   @sw.decorate

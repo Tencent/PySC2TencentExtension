@@ -302,6 +302,7 @@ class SC2Env(environment.Base):
     self._episode_steps = 0
     self._episode_count = 0
     self._obs = None
+    self._raw = False
     self._state = environment.StepType.LAST  # Want to jump to `reset`.
     logging.info("Environment is ready on map: %s", self._map_name)
 
@@ -443,10 +444,13 @@ class SC2Env(environment.Base):
     if self._state == environment.StepType.LAST:
       return self.reset()
 
-    self._parallel.run(
-        (c.act, f.transform_action(o.observation, a))
-        for c, f, o, a in zip(
-            self._controllers, self._features, self._obs, actions))
+    if self._raw:
+      self._parallel.run([(self._controllers[0].acts, actions)])
+      #self._parallel.run((c.act, a) for c, a in zip(self._controllers, actions))
+    else:
+      self._parallel.run(
+          (c.act, self._features.transform_action(o.observation, a))
+          for c, o, a in zip(self._controllers, self._obs, actions))
 
     self._state = environment.StepType.MID
     return self._step()
@@ -550,3 +554,25 @@ class SC2Env(environment.Base):
       for port in self._ports:
         portpicker.return_port(port)
       self._ports = None
+    logging.info(sw)
+
+  @property
+  def obs_pb(self):
+    return self._obs
+
+  @property
+  def controller(self):
+    return self._controllers[0]
+
+  def support_raw(self):
+    self._raw = True
+
+  def set_raw(self):
+    self._raw = True
+
+  def reset_raw(self):
+    self._raw = False
+
+  @property
+  def raw(self):
+    return self._raw
