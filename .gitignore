@@ -1,2 +1,5 @@
 *.pyc
 *_pb2.py
+.idea
+__pycache__
+PySC2.egg-info

@@ -302,7 +302,6 @@ class SC2Env(environment.Base):
     self._episode_steps = 0
     self._episode_count = 0
     self._obs = None
-    self._raw = False
     self._state = environment.StepType.LAST  # Want to jump to `reset`.
     logging.info("Environment is ready on map: %s", self._map_name)
 
@@ -441,16 +440,26 @@ class SC2Env(environment.Base):
   @sw.decorate("step_env")
   def step(self, actions):
     """Apply actions, step the world forward, and return observations."""
+    # TODO: support hybrid actions for each player
     if self._state == environment.StepType.LAST:
       return self.reset()
 
-    if self._raw:
-      self._parallel.run([(self._controllers[0].acts, actions)])
-      #self._parallel.run((c.act, a) for c, a in zip(self._controllers, actions))
-    else:
-      self._parallel.run(
-          (c.act, self._features.transform_action(o.observation, a))
-          for c, o, a in zip(self._controllers, self._obs, actions))
+    funcs_with_args = []
+    for c, o, a in zip(self._controllers, self._obs, actions):
+      if not type(a) == list:  # a single command, must be pysc2 func-call action
+        item = (c.act, self._features.transform_action(o.observation, a))
+      else:  # presume it's a list of pb actions
+        item = (c.acts, a)
+      funcs_with_args.append(item)
+
+    self._parallel.run(funcs_with_args)
+    # if self._raw:
+    #   self._parallel.run([(self._controllers[0].acts, actions)])
+    #   #self._parallel.run((c.act, a) for c, a in zip(self._controllers, actions))
+    # else:
+    #   self._parallel.run(
+    #       (c.act, self._features.transform_action(o.observation, a))
+    #       for c, o, a in zip(self._controllers, self._obs, actions))
 
     self._state = environment.StepType.MID
     return self._step()
@@ -563,16 +572,3 @@ class SC2Env(environment.Base):
   @property
   def controller(self):
     return self._controllers[0]
-
-  def support_raw(self):
-    self._raw = True
-
-  def set_raw(self):
-    self._raw = True
-
-  def reset_raw(self):
-    self._raw = False
-
-  @property
-  def raw(self):
-    return self._raw

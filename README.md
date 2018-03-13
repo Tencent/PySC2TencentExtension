@@ -19,6 +19,26 @@
   </a>
 </div>
 
+# Our fork of PySC2
+Besides the "feature_layer" observations/actions interface, 
+this fork also exposes the "raw" interface of `s2client-proto` to enable a per-unit-control.
+
+It supports a hybrid use of the two intefaces. For example, consider a two-player game and the code below 
+```python
+timesteps = env.step(actions)
+```
+For `player_id = 0`, 
+all the `uints` in pb format can be accessed via `timesteps[player_id].observation['units]`,
+while the original Deepmind `PySC2` features can still be accessed via `timesteps[player_id].observation['feat_name']`.
+
+For the actions passed in, `acionts[player_id]` can be either a `list` of pb actions or a single Deepmind `PySC2` action. 
+(TODO: support a list of hybrid action when necessary).
+
+It goes similar for the other player `player_id = 1`. 
+
+Below are the original contents
+------------------------------------
+
 # PySC2 - StarCraft II Learning Environment
 
 [PySC2](https://github.com/deepmind/pysc2) is [DeepMind](http://deepmind.com)'s
