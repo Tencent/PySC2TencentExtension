@@ -22,26 +22,26 @@ class TypeData(object):
 
 class TechTree(object):
     def __init__(self):
+        self.fps = 16
         self.m_unitTypeData = {}
         self.m_upgradeData = {}
         self.initUnitTypeData()
         self.initUpgradeData()
-        self.fps = 16
 
     def getUnitData(self,unit_id):
-        if self.m_unitTypeData.has_key(unit_id):
+        if unit_id in self.m_unitTypeData:
             return self.m_unitTypeData[unit_id]
         else:
             print('Unrecognized Unit ID!')
             raise KeyError
 
     def getUpgradeData(self,upgrade_id):
-        if self.m_upgradeData.has_key(upgrade_id):
+        if upgrade_id in self.m_upgradeData:
             return self.m_upgradeData[upgrade_id]
         else:
             print('Unrecognized Upgrade ID!')
             raise KeyError
-        
+
     def initUnitTypeData(self):
 
     # Protoss Buildings                                                                                  unit  bld   wrk    rfn    sup    hall   add
