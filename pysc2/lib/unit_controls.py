@@ -87,8 +87,28 @@ class UnitOrders(collections.namedtuple("UnitOrders", [
         self.progress
     ], dtype=float)
 
+class PassengerUnit(collections.namedtuple("PassengerUnit", [
+    "tag", "health", "health_max", "shield", "shield_max",
+    "energy", "energy_max", "unit_type"])):
+  __slots__ = ()
+
+  @property
+  def np_array(self):
+    return np.array([
+        self.tag,
+        self.health,
+        self.health_max,
+        self.shield,
+        self.shield_max,
+        self.energy,
+        self.energy_max,
+        self.unit_type
+    ], dtype=float)
+
+
 class Unit(collections.namedtuple("unit", [
-    "bool_attr", "int_attr", "float_attr", "orders"])):
+    "bool_attr", "int_attr", "float_attr", 
+    "orders", "passengers", "buff_ids"])):
   """The definition of unit"""
   __slots__ = ()
 
@@ -119,11 +139,15 @@ class Unit(collections.namedtuple("unit", [
     ufloat = assemble_float(u)
     uint = assemble_int(u)
     uorders = assemble_orders(u)
+    upassengers = assemble_passenger_unit(u)
+    ubuff_ids = assemble_buff_ids(u)
     return super(Unit, cls).__new__(cls,
         bool_attr=uflag,
         int_attr=uint,
         float_attr=ufloat,
-        orders=uorders)
+        orders=uorders,
+        passengers=upassengers,
+        buff_ids=ubuff_ids)
 
 def assemble_bool(u):
   return UnitFlags(is_selected=u.is_selected, 
@@ -175,3 +199,24 @@ def assemble_orders(u):
         progress=o.progress)
     orders.append(uo)
   return orders
+
+def assemble_passenger_unit(u):
+  passengers = []
+  for p in u.passengers:
+    pu = PassengerUnit(tag=p.tag,
+        health=p.health,
+        health_max=p.health_max,
+        shield=p.shield,
+        shield_max=p.shield_max,
+        energy=p.energy,
+        energy_max=p.energy_max,
+        unit_type=p.unit_type)
+    passengers.append(pu)
+  return passengers
+
+def assemble_buff_ids(u):
+  buff_ids = []
+  for val in u.buff_ids:
+    buff_ids.append(val)
+  return buff_ids
+
