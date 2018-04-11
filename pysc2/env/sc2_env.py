@@ -472,6 +472,7 @@ class SC2Env(environment.Base):
       self._obs = self._parallel.run(c.observe for c in self._controllers)
       agent_obs = [f.transform_obs(o) for f, o in zip(
           self._features, self._obs)]
+      game_info = [None for c in self._controllers]
 
     # TODO(tewalds): How should we handle more than 2 agents and the case where
     # the episode can end early for some agents?
@@ -485,6 +486,8 @@ class SC2Env(environment.Base):
         for result in o.player_result:
           if result.player_id == player_id:
             outcome[i] = possible_results.get(result.result, 0)
+    else:
+        game_info = self._parallel.run(c.game_info for c in self._controllers)
 
     if self._score_index >= 0:  # Game score, not win/loss reward.
       cur_score = [o["score_cumulative"][self._score_index] for o in agent_obs]
@@ -524,8 +527,9 @@ class SC2Env(environment.Base):
 
     return tuple(environment.TimeStep(step_type=self._state,
                                       reward=r * self._score_multiplier,
-                                      discount=discount, observation=o)
-                 for r, o in zip(reward, agent_obs))
+                                      discount=discount, observation=o,
+                                      game_info=info)
+                 for r, o, info in zip(reward, agent_obs, game_info))
 
   def send_chat_messages(self, messages):
     """Useful for logging messages into the replay."""

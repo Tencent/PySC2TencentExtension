@@ -888,13 +888,14 @@ class Features(object):
 
     out["available_actions"] = np.array(self.available_actions(obs.observation),
                                         dtype=np.int32)
-    out["units"] = self.transform_unit_control(obs)
+    out["units"] = self.transform_unit_control(raw)
+    out["raw_data"] = raw
     return out
 
   @sw.decorate
-  def transform_unit_control(self, obs):
+  def transform_unit_control(self, raw):
     units = []
-    for u in obs.raw_data.units:
+    for u in raw.units:
       units.append(unit_controls.Unit(u=u))
     return units
 
