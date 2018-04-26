@@ -542,7 +542,12 @@ class SC2Env(environment.Base):
     replay_path = self._run_config.save_replay(
         self._controllers[0].save_replay(), replay_dir, prefix)
     logging.info("Wrote replay to: %s", replay_path)
+    print("Wrote replay to: {}".format(replay_path))
     return replay_path
+
+  @property
+  def state(self):
+    return self._state
 
   def close(self):
     logging.info("Environment Close")

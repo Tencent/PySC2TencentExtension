@@ -22,6 +22,7 @@ import datetime
 import os
 
 from pysc2.lib import gfile
+import uuid
 
 
 class Version(collections.namedtuple("Version", [
@@ -95,7 +96,9 @@ class RunConfig(object):
     else:
       replay_filename = prefix + "_"
     now = datetime.datetime.utcnow().replace(microsecond=0)
-    replay_filename += "%s.SC2Replay" % now.isoformat("-").replace(":", "-")
+    replay_filename += "%s_%s.SC2Replay" % (
+        now.isoformat("-").replace(":", "-"),
+        str(uuid.uuid1()))
     replay_dir = self.abs_replay_path(replay_dir)
     if not gfile.Exists(replay_dir):
       gfile.MakeDirs(replay_dir)
