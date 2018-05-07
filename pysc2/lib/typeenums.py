@@ -281,6 +281,7 @@ class ABILITY_ID(Enum):
         BUILD_GHOSTACADEMY = 327   # Target: Point.
         BUILD_HATCHERY = 1152  # Target: Point.
         BUILD_HYDRALISKDEN = 1157  # Target: Point.
+        BUILD_LURKERDENMP = 1163  # Target: Point.
         BUILD_INFESTATIONPIT = 1160  # Target: Point.
         BUILD_INTERCEPTORS = 1042  # Target: None.
         BUILD_MISSILETURRET = 323   # Target: Point.
