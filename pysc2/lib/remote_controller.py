@@ -187,7 +187,7 @@ class RemoteController(object):
   def data_raw(self):
     """Get the raw static data for the current game. Prefer `data` instead."""
     return self._client.send(data=sc_pb.RequestData(
-        ability_id=True, unit_type_id=True, upgrade_id=True))
+        ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True))
 
   def data(self):
     """Get the static data for the current game."""

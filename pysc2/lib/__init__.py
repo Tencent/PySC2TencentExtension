@@ -14,4 +14,5 @@
 
 from pysc2.lib.unit_controls import Unit, UnitFloatAttr, UnitFlags, UnitIntAttr
 from pysc2.lib.typeenums import RACE, UNIT_TYPEID, ABILITY_ID, UPGRADE_ID, BUFF_ID
+from pysc2.lib.data_raw import data_raw_3_16, data_raw_4_0
 from pysc2.lib.tech_tree import TechTree, TypeData
