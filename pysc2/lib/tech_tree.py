@@ -283,7 +283,6 @@ class TechTree(object):
         self.m_upgradeData[UPGRADE_ID.BURROW.value] =                     TypeData( RACE.Zerg, 100, 100, 0, self.fps*100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_BURROW.value, 0, [ UNIT_TYPEID.ZERG_HATCHERY.value, UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value ], [], [] )
         self.m_upgradeData[UPGRADE_ID.CENTRIFICALHOOKS.value] =           TypeData( RACE.Zerg, 150, 150, 0, self.fps*110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_CENTRIFUGALHOOKS.value, 0, [ UNIT_TYPEID.ZERG_BANELINGNEST.value ], [], [] )
         self.m_upgradeData[UPGRADE_ID.CHITINOUSPLATING.value] =           TypeData( RACE.Zerg, 150, 150, 0, self.fps*110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_CHITINOUSPLATING.value, 0, [ UNIT_TYPEID.ZERG_ULTRALISKCAVERN.value ], [], [] )
-        self.m_upgradeData[UPGRADE_ID.EVOLVEGROOVEDSPINES.value] =        TypeData( RACE.Zerg, 150, 150, 0, self.fps*110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_GROOVEDSPINES.value, 0, [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [], [] )
         self.m_upgradeData[UPGRADE_ID.EVOLVEMUSCULARAUGMENTS.value] =     TypeData( RACE.Zerg, 150, 150, 0, self.fps*100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_MUSCULARAUGMENTS.value, 0, [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [], [] )
         self.m_upgradeData[UPGRADE_ID.GLIALRECONSTITUTION.value] =        TypeData( RACE.Zerg, 100, 100, 0, self.fps*110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_GLIALREGENERATION.value, 0, [ UNIT_TYPEID.ZERG_ROACHWARREN.value ], [ UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value ], [] )
         self.m_upgradeData[UPGRADE_ID.INFESTORENERGYUPGRADE.value] =      TypeData( RACE.Zerg, 150, 150, 0, self.fps*80, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_PATHOGENGLANDS.value, 0, [ UNIT_TYPEID.ZERG_INFESTATIONPIT.value ], [], [] )
@@ -348,6 +347,10 @@ class TechTree(object):
                     self.m_unitTypeData[unit_type].buildTime = buildTime
 
     def updateUpgradeData(self, version):
+        if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.1.4'):
+            self.m_upgradeData[UPGRADE_ID.EVOLVEGROOVEDSPINES.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_GROOVEDSPINES.value, 0, [UNIT_TYPEID.ZERG_HYDRALISKDEN.value], [], [])
+            self.m_upgradeData[UPGRADE_ID.EVOLVEMUSCULARAUGMENTS.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_MUSCULARAUGMENTS.value, 0, [UNIT_TYPEID.ZERG_HYDRALISKDEN.value], [], [])
+
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
             data_raw = data_raw_4_0
             for upgrade_type in self.m_upgradeData:
