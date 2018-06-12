@@ -257,7 +257,8 @@ class SC2Env(environment.Base):
 
     interfaces = []
     for i, interface_format in enumerate(agent_interface_format):
-      require_raw = visualize and (i == 0)
+      # require_raw = visualize and (i == 0)
+      require_raw = True
       interfaces.append(self._get_interface(interface_format, require_raw))
 
     if self._num_agents == 1:
