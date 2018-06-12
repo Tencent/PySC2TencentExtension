@@ -31,6 +31,7 @@ from pysc2.maps import ladder
 from pysc2.maps import lib
 from pysc2.maps import melee
 from pysc2.maps import mini_games
+from pysc2.maps import arena
 
 
 # Use `get` to create a map by name.
