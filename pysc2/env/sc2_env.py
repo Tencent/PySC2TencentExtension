@@ -445,9 +445,9 @@ class SC2Env(environment.Base):
       return self.reset()
 
     funcs_with_args = []
-    for c, o, a in zip(self._controllers, self._obs, actions):
+    for c, f, o, a in zip(self._controllers, self._features, self._obs, actions):
       if not type(a) == list:  # a single command, must be pysc2 func-call action
-        item = (c.act, self._features.transform_action(o.observation, a))
+        item = (c.act, f.transform_action(o.observation, a))
       else:  # presume it's a list of pb actions
         item = (c.acts, a)
       funcs_with_args.append(item)
