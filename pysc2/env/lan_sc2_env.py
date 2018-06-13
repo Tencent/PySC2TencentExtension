@@ -270,7 +270,7 @@ class LanSC2Env(sc2_env.SC2Env):
     self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
 
     interface = self._get_interface(
-        agent_interface_format=agent_interface_format, require_raw=visualize)
+        agent_interface_format=agent_interface_format, require_raw=True)
 
     self._launch_remote(host, config_port, race, interface)
 

@@ -116,7 +116,7 @@ class RemoteSC2Env(sc2_env.SC2Env):
     self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
 
     interface = self._get_interface(
-        agent_interface_format=agent_interface_format, require_raw=visualize)
+        agent_interface_format=agent_interface_format, require_raw=True)
 
     self._connect_remote(host, host_port, lan_port, race, map_inst, interface)
 
