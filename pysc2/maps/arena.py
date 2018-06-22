@@ -16,8 +16,12 @@ class Arena(lib.Map):
 
 
 arena_maps = [
+    "2StalkerA",
     "4MarineA",
     "4MarineB",
+    "HydraMutalisk",
+    "Immortal2Zealot",
+    "ImmortalZealot",
 ]
 
 for name in arena_maps:
