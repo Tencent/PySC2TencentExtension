@@ -11,30 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Register/import the maps, and offer a way to create one by name.
-
-Users of maps should import this module:
-  from pysc2 import maps
-and create the maps by name:
-  maps.get("MapName")
-
-If you want to create your own map, then import the map lib and subclass Map.
-Your subclass will be implicitly registered as a map that can be constructed by
-name, as long as it is imported somewhere.
-"""
+"""Define the scout_test map configs."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from pysc2.maps import ladder
 from pysc2.maps import lib
-from pysc2.maps import melee
-from pysc2.maps import mini_games
-from pysc2.maps import arena
-from pysc2.maps import scout_test
 
 
-# Use `get` to create a map by name.
-get = lib.get
-get_maps = lib.get_maps
+class ScoutTest(lib.Map):
+  directory = "scout_test"
+  players = 2
+  game_steps_per_episode = 16 * 60 * 30  # 30 minute limit.
+
+
+scout_test_maps = [
+    "ScoutSimple64",
+    "ScoutSimple64WithQueen",
+    "ScoutAbyssalReef"
+]
+
+for name in scout_test_maps:
+  globals()[name] = type(name, (ScoutTest,), dict(filename=name))
