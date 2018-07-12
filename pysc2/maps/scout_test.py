@@ -29,7 +29,8 @@ class ScoutTest(lib.Map):
 scout_test_maps = [
     "ScoutSimple64",
     "ScoutSimple64WithQueen",
-    "ScoutAbyssalReef"
+    "ScoutAbyssalReef", 
+    "ScoutSimple64Dodge"
 ]
 
 for name in scout_test_maps:
