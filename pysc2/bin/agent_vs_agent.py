@@ -277,19 +277,18 @@ def run_loop(agents, env, max_steps=0):
     except KeyboardInterrupt:
         pass
     finally:
-        # print info
-        if outcome > 0:
-            n_win += 1
-        elif outcome == 0:
-            n_win += 0.5
-
-        print('episode = {}, outcome = {}, n_win = {}, current winning rate = {}'.format(
-            0, outcome, n_win, n_win))
-
         elapsed_time = time.time() - start_time
         print("Took %.3f seconds for %s steps: %.3f fps" % (
             elapsed_time, total_frames, total_frames / elapsed_time))
 
+    # print info
+    if outcome > 0:
+        n_win += 1
+    elif outcome == 0:
+        n_win += 0.5
+
+    print('episode = {}, outcome = {}, n_win = {}, current winning rate = {}'.format(
+        0, outcome, n_win, n_win))
 
 def entry_point():  # Needed so setup.py scripts work.
     app.run(main)
