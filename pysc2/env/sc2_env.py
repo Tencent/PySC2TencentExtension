@@ -124,7 +124,8 @@ class SC2Env(environment.Base):
                score_index=None,
                score_multiplier=None,
                random_seed=None,
-               disable_fog=False):
+               disable_fog=False,
+               version=None):
     """Create a SC2 Env.
 
     You must pass a resolution that you want to play at. You can send either
@@ -227,6 +228,7 @@ class SC2Env(environment.Base):
     self._replay_dir = replay_dir
     self._random_seed = random_seed
     self._disable_fog = disable_fog
+    self._version = version
 
     if score_index is None:
       self._score_index = map_inst.score_index
@@ -329,7 +331,7 @@ class SC2Env(environment.Base):
     return interface
 
   def _launch_sp(self, map_inst, interface):
-    self._sc2_procs = [self._run_config.start()]
+    self._sc2_procs = [self._run_config.start(version=self._version)]
     self._controllers = [p.controller for p in self._sc2_procs]
 
     # Create the game.
@@ -357,7 +359,7 @@ class SC2Env(environment.Base):
     self._ports = _pick_unused_ports(self._num_agents * 2)
 
     # Actually launch the game processes.
-    self._sc2_procs = [self._run_config.start(extra_ports=self._ports)
+    self._sc2_procs = [self._run_config.start(version=self._version, extra_ports=self._ports)
                        for _ in range(self._num_agents)]
     self._controllers = [p.controller for p in self._sc2_procs]
 
