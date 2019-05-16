@@ -179,7 +179,7 @@ class TechTree(object):
         self.m_unitTypeData[UNIT_TYPEID.ZERG_QUEEN.value] =               TypeData( RACE.Zerg, 150, 0, 2, self.fps*50, True, False, False, False, False, False, False, ABILITY_ID.TRAIN_QUEEN.value, 0, [ UNIT_TYPEID.ZERG_HATCHERY.value, UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value ], [ UNIT_TYPEID.ZERG_SPAWNINGPOOL.value ], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_LARVA.value] =               TypeData( RACE.Zerg, 0, 0, 0, self.fps*15, True, False, False, False, False, False, False, 0, 0, [], [], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_EGG.value] =                 TypeData( RACE.Zerg, 0, 0, 0, 0, True, False, False, False, False, False, False, 0, 0, [], [], [] )
-        self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERMP.value] =            TypeData( RACE.Zerg, 50, 100, 1, self.fps*25, True, True, False, False, False, False, False, ABILITY_ID.MORPH_LURKER.value, 0,  [UNIT_TYPEID.ZERG_HYDRALISK.value], [UNIT_TYPEID.ZERG_LURKERDENMP.value], [] )
+        self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERMP.value] =            TypeData( RACE.Zerg, 50, 100, 1, self.fps*25, True, False, False, False, False, False, False, ABILITY_ID.MORPH_LURKER.value, 0,  [UNIT_TYPEID.ZERG_HYDRALISK.value], [UNIT_TYPEID.ZERG_LURKERDENMP.value], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_RAVAGER.value] =             TypeData( RACE.Zerg, 25, 75, 1, self.fps*12, True, False, False, False, False, False, False, ABILITY_ID.MORPH_RAVAGER.value, 0,  [UNIT_TYPEID.ZERG_ROACH.value], [], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_BROODLORD.value] =           TypeData( RACE.Zerg, 150, 150, 2, self.fps*34, True, False, False, False, False, False, False, ABILITY_ID.MORPH_BROODLORD.value, 0,  [UNIT_TYPEID.ZERG_CORRUPTOR.value], [UNIT_TYPEID.ZERG_GREATERSPIRE.value], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERSEER.value] =            TypeData( RACE.Zerg, 50, 50, 0, self.fps*17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERSEER.value, 0,  [UNIT_TYPEID.ZERG_OVERLORD.value], [ UNIT_TYPEID.ZERG_LAIR.value ], [] )
@@ -309,7 +309,7 @@ class TechTree(object):
 
     def updateUnitTypeData(self, version):
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
-            self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERDENMP.value] = TypeData(RACE.Zerg, 100, 150, 0, self.fps*25, True, True, False, False, False, False, False, ABILITY_ID.BUILD_LURKERDENMP.value, 0, [ UNIT_TYPEID.ZERG_DRONE.value ], [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [])
+            self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERDENMP.value] = TypeData(RACE.Zerg, 100, 150, 0, self.fps*120, True, True, False, False, False, False, False, ABILITY_ID.BUILD_LURKERDENMP.value, 0, [ UNIT_TYPEID.ZERG_DRONE.value ], [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [])
             data_raw = data_raw_4_0
             for unit_type in self.m_unitTypeData:
                 mineralCost = data_raw.units[unit_type].mineral_cost
