@@ -176,7 +176,7 @@ class RemoteController(object):
     """Start a replay."""
     return self._client.send(start_replay=req_start_replay)
 
-  @valid_status(Status.in_game, Status.in_replay)
+  @valid_status(Status.in_game, Status.in_replay, Status.ended)
   @sw.decorate
   def game_info(self):
     """Get the basic information about the game."""
