@@ -109,6 +109,7 @@ class SC2Env(environment.Base):
                _only_use_kwargs=None,
                map_name=None,
                players=None,
+               agent_names=None,
                agent_race=None,  # deprecated
                bot_race=None,  # deprecated
                difficulty=None,  # deprecated
@@ -208,6 +209,11 @@ class SC2Env(environment.Base):
     num_players = len(players)
     self._num_agents = sum(1 for p in players if isinstance(p, Agent))
     self._players = players
+    if agent_names is None:
+      self._agent_names = [None] * self._num_agents
+    else:
+      assert len(agent_names) == self._num_agents
+      self._agent_names = agent_names
 
     if not 1 <= num_players <= 2 or not self._num_agents:
       raise ValueError(
@@ -351,7 +357,8 @@ class SC2Env(environment.Base):
       create.random_seed = self._random_seed
     self._controllers[0].create_game(create)
 
-    join = sc_pb.RequestJoinGame(race=agent_race, options=interface)
+    join = sc_pb.RequestJoinGame(race=agent_race, options=interface,
+                                 player_name=self._agent_names[0])
     self._controllers[0].join_game(join)
 
   def _launch_mp(self, map_inst, interfaces):
@@ -387,7 +394,8 @@ class SC2Env(environment.Base):
     join_reqs = []
     for agent_index, p in enumerate(agent_players):
       ports = self._ports[:]
-      join = sc_pb.RequestJoinGame(options=interfaces[agent_index])
+      join = sc_pb.RequestJoinGame(options=interfaces[agent_index],
+                                   player_name=self._agent_names[agent_index])
       join.shared_port = 0  # unused
       join.server_ports.game_port = ports.pop(0)
       join.server_ports.base_port = ports.pop(0)

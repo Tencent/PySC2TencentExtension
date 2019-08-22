@@ -204,6 +204,7 @@ class LanSC2Env(sc2_env.SC2Env):
                config_port=None,
                race=None,
                agent_interface_format=None,
+               agent_name=None,
                discount=1.,
                visualize=False,
                step_mul=None,
@@ -271,6 +272,7 @@ class LanSC2Env(sc2_env.SC2Env):
 
     interface = self._get_interface(
         agent_interface_format=agent_interface_format, require_raw=True)
+    self._agent_names = [agent_name]
 
     self._launch_remote(host, config_port, race, interface)
 
@@ -305,7 +307,8 @@ class LanSC2Env(sc2_env.SC2Env):
     self._controllers = [p.controller for p in self._sc2_procs]
 
     # Create the join request.
-    join = sc_pb.RequestJoinGame(options=interface)
+    join = sc_pb.RequestJoinGame(options=interface,
+                                 agent_name=self._agent_names[0])
     join.race = race
     join.shared_port = 0  # unused
     join.server_ports.game_port = settings["ports"]["server"]["game"]
