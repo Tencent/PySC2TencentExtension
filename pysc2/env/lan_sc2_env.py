@@ -308,7 +308,7 @@ class LanSC2Env(sc2_env.SC2Env):
 
     # Create the join request.
     join = sc_pb.RequestJoinGame(options=interface,
-                                 agent_name=self._agent_names[0])
+                                 player_name=self._agent_names[0])
     join.race = race
     join.shared_port = 0  # unused
     join.server_ports.game_port = settings["ports"]["server"]["game"]
