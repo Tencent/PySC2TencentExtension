@@ -182,7 +182,8 @@ class TechTree(object):
         self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERMP.value] =            TypeData( RACE.Zerg, 50, 100, 1, self.fps*25, True, False, False, False, False, False, False, ABILITY_ID.MORPH_LURKER.value, 0,  [UNIT_TYPEID.ZERG_HYDRALISK.value], [UNIT_TYPEID.ZERG_LURKERDENMP.value], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_RAVAGER.value] =             TypeData( RACE.Zerg, 25, 75, 1, self.fps*12, True, False, False, False, False, False, False, ABILITY_ID.MORPH_RAVAGER.value, 0,  [UNIT_TYPEID.ZERG_ROACH.value], [], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_BROODLORD.value] =           TypeData( RACE.Zerg, 150, 150, 2, self.fps*34, True, False, False, False, False, False, False, ABILITY_ID.MORPH_BROODLORD.value, 0,  [UNIT_TYPEID.ZERG_CORRUPTOR.value], [UNIT_TYPEID.ZERG_GREATERSPIRE.value], [] )
-        self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERSEER.value] =            TypeData( RACE.Zerg, 50, 50, 0, self.fps*17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERSEER.value, 0,  [UNIT_TYPEID.ZERG_OVERLORD.value], [ UNIT_TYPEID.ZERG_LAIR.value ], [] )
+        self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERSEER.value] =            TypeData( RACE.Zerg, 50, 50, 0, self.fps*17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERSEER.value, 0,  [UNIT_TYPEID.ZERG_OVERLORD.value, UNIT_TYPEID.ZERG_OVERLORDTRANSPORT.value], [ UNIT_TYPEID.ZERG_LAIR.value ], [] )
+        self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERLORDTRANSPORT.value] =   TypeData( RACE.Zerg, 25, 25, 0, self.fps * 17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERLORDTRANSPORT.value, 0, [UNIT_TYPEID.ZERG_OVERLORD.value], [UNIT_TYPEID.ZERG_LAIR.value], [])
 
     # Set the Mineral / Gas cost of each unit from game core data
         data_raw = data_raw_3_16
@@ -308,6 +309,10 @@ class TechTree(object):
         self.m_upgradeData[UPGRADE_ID.ZERGMISSILEWEAPONSLEVEL3.value] =   TypeData( RACE.Zerg, 200, 200, 0, self.fps*220, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_ZERGMISSILEWEAPONSLEVEL3.value, 0, [ UNIT_TYPEID.ZERG_EVOLUTIONCHAMBER.value ], [ UNIT_TYPEID.ZERG_HIVE.value ], [UPGRADE_ID.ZERGMISSILEWEAPONSLEVEL2.value] )
 
     def updateUnitTypeData(self, version):
+        if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.7.1'):
+            self.m_unitTypeData[UNIT_TYPEID.ZERG_NYDUSCANAL.value] = TypeData(RACE.Zerg, 50, 50, 0, self.fps * 20, True, True, False, False, False, False, False, ABILITY_ID.BUILD_NYDUSWORM.value, 0, [UNIT_TYPEID.ZERG_NYDUSNETWORK.value], [UNIT_TYPEID.ZERG_NYDUSNETWORK.value], [])
+            self.m_unitTypeData[UNIT_TYPEID.ZERG_NYDUSNETWORK.value] = TypeData(RACE.Zerg, 150, 150, 0, self.fps * 50, True, True, False, False, False, False, False, ABILITY_ID.BUILD_NYDUSNETWORK.value, 0,[UNIT_TYPEID.ZERG_DRONE.value], [UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value], [])
+
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
             self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERDENMP.value] = TypeData(RACE.Zerg, 100, 150, 0, self.fps*120, True, True, False, False, False, False, False, ABILITY_ID.BUILD_LURKERDENMP.value, 0, [ UNIT_TYPEID.ZERG_DRONE.value ], [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [])
             data_raw = data_raw_4_0
@@ -350,7 +355,9 @@ class TechTree(object):
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.1.4'):
             self.m_upgradeData[UPGRADE_ID.EVOLVEGROOVEDSPINES.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_GROOVEDSPINES.value, 0, [UNIT_TYPEID.ZERG_HYDRALISKDEN.value], [], [])
             self.m_upgradeData[UPGRADE_ID.EVOLVEMUSCULARAUGMENTS.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_MUSCULARAUGMENTS.value, 0, [UNIT_TYPEID.ZERG_HYDRALISKDEN.value], [], [])
-
+        if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.7.1'):
+            self.m_upgradeData[UPGRADE_ID.TUNNELINGCLAWS.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_TUNNELINGCLAWS.value, 0, [UNIT_TYPEID.ZERG_ROACHWARREN.value], [UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value], [])
+            #TODO: Anabolic Synthesis for Ultralisk?
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
             data_raw = data_raw_4_0
             for upgrade_type in self.m_upgradeData:
