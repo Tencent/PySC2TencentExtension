@@ -74,7 +74,7 @@ ladder_maps = [
     ("Frost",                Ladder2017Season3, "FrostLE", 2),
     ("Honorgrounds",         Ladder2017Season1, "HonorgroundsLE", 4),
     ("Interloper",           Ladder2017Season3, "InterloperLE", 2),
-    ("KairosJunction",       Ladder2019Season1, "KairosJunctionLE", 2),
+    ("KairosJunction",       Ladder2018Season4, "KairosJunctionLE", 2),
     ("KingsCove",            Ladder2019Season1, "KingsCoveLE", 2),
     ("LostandFound",         Ladder2018Season3, "LostandFoundLE", 2),
     ("MechDepot",            Ladder2017Season3, "MechDepotLE", 2),
