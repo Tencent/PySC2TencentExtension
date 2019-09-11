@@ -537,6 +537,8 @@ class SC2Env(environment.Base):
     for o, obs in zip(agent_obs, self._obs):  # expose same data structure with raw_pb
       o["score"] = obs.observation.score
       o["player_common"] = obs.observation.player_common
+      o['ui_data'] = obs.observation.ui_data
+      o["abilities"] = obs.observation.abilities
     return tuple(environment.TimeStep(step_type=self._state,
                                       reward=r * self._score_multiplier,
                                       discount=discount, observation=o,
