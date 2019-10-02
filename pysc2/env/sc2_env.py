@@ -318,7 +318,7 @@ class SC2Env(environment.Base):
   def _get_interface(agent_interface_format, require_raw):
     interface = sc_pb.InterfaceOptions(
         raw=(agent_interface_format.use_feature_units or require_raw),
-        score=True)
+        score=True, raw_affects_selection=True)
 
     if agent_interface_format.feature_dimensions:
       interface.feature_layer.width = (
