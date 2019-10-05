@@ -20,7 +20,7 @@ It goes similar for the other player `player_id = 1`.
 ## Installation
 git clone the repo, cd to the folder, and run
 ```bash
-pip isntall -e .
+pip install -e .
 ```
 **Note: the in-place `-e .` installation is REQUIRED,**
 as we have binaries (i.e., the `tech_tree` data) shipped with the fork 
