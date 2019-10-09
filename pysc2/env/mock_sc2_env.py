@@ -160,6 +160,7 @@ class SC2TestEnv(_TestEnvironment):
                discount=1.,
                visualize=False,
                step_mul=None,
+               realtime=False,
                save_replay_episodes=0,
                replay_dir=None,
                game_steps_per_episode=None,
@@ -204,6 +205,9 @@ class SC2TestEnv(_TestEnvironment):
 
     if _only_use_kwargs:
       raise ValueError('All arguments must be passed as keyword arguments.')
+
+    if realtime:
+      raise ValueError('realtime mode is not supported by the mock env.')
 
     if not players:
       num_agents = 1

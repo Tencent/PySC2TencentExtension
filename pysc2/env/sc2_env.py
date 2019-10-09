@@ -119,6 +119,7 @@ class SC2Env(environment.Base):
                discount=1.,
                visualize=False,
                step_mul=None,
+               realtime=False,
                save_replay_episodes=0,
                replay_dir=None,
                game_steps_per_episode=None,
@@ -230,6 +231,7 @@ class SC2Env(environment.Base):
 
     self._discount = discount
     self._step_mul = step_mul or map_inst.step_mul
+    self._realtime = realtime
     self._save_replay_episodes = save_replay_episodes
     self._replay_dir = replay_dir
     self._random_seed = random_seed
@@ -344,7 +346,8 @@ class SC2Env(environment.Base):
     create = sc_pb.RequestCreateGame(
         local_map=sc_pb.LocalMap(
             map_path=map_inst.path, map_data=map_inst.data(self._run_config)),
-        disable_fog=self._disable_fog)
+        disable_fog=self._disable_fog,
+        realtime=self._realtime)
     agent_race = Race.random
     for p in self._players:
       if isinstance(p, Agent):
@@ -377,8 +380,11 @@ class SC2Env(environment.Base):
       c.save_map(map_inst.path, map_inst.data(self._run_config))
 
     # Create the game. Set the first instance as the host.
-    create = sc_pb.RequestCreateGame(local_map=sc_pb.LocalMap(
-        map_path=map_inst.path), disable_fog=self._disable_fog)
+    create = sc_pb.RequestCreateGame(
+        local_map=sc_pb.LocalMap(
+            map_path=map_inst.path),
+        disable_fog=self._disable_fog,
+        realtime=self._realtime)
     if self._random_seed is not None:
       create.random_seed = self._random_seed
     for p in self._players:
@@ -497,7 +503,7 @@ class SC2Env(environment.Base):
         (parallel_observe, c, f)
         for c, f in zip(self._controllers, self._features)))
 
-    game_loop = self._agent_obs[0].game_loop[0]
+    game_loop = agent_obs[0].game_loop[0]
 
     if game_loop < target_game_loop:
       raise ValueError("The game didn't advance to the expected game loop")
