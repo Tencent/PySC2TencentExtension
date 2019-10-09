@@ -577,11 +577,11 @@ class SC2Env(environment.Base):
     self._parallel.run(
         (c.chat, message) for c, message in zip(self._controllers, messages))
 
-  def save_replay(self, replay_dir, prefix=None):
+  def save_replay(self, replay_dir, prefix=None, replay_name=None):
     if prefix is None:
       prefix = self._map_name
     replay_path = self._run_config.save_replay(
-        self._controllers[0].save_replay(), replay_dir, prefix)
+        self._controllers[0].save_replay(), replay_dir, prefix, replay_name)
     logging.info("Wrote replay to: %s", replay_path)
     print("Wrote replay to: {}".format(replay_path))
     return replay_path

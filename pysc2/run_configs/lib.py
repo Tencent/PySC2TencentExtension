@@ -74,7 +74,7 @@ class RunConfig(object):
       if f.lower().endswith(".sc2replay"):
         yield os.path.join(replay_dir, f)
 
-  def save_replay(self, replay_data, replay_dir, prefix=None):
+  def save_replay(self, replay_data, replay_dir, prefix=None, replay_name=None):
     """Save a replay to a directory, returning the path to the replay.
 
     Args:
@@ -96,9 +96,12 @@ class RunConfig(object):
     else:
       replay_filename = prefix + "_"
     now = datetime.datetime.utcnow().replace(microsecond=0)
-    replay_filename += "%s_%s.SC2Replay" % (
-        now.isoformat("-").replace(":", "-"),
-        str(uuid.uuid1()))
+    if not replay_name:
+      replay_filename += "%s_%s.SC2Replay" % (
+          now.isoformat("-").replace(":", "-"),
+          str(uuid.uuid1()))
+    else:
+      replay_filename += replay_name + ".SC2Replay"
     replay_dir = self.abs_replay_path(replay_dir)
     if not gfile.Exists(replay_dir):
       gfile.MakeDirs(replay_dir)
