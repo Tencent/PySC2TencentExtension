@@ -506,7 +506,9 @@ class SC2Env(environment.Base):
     game_loop = agent_obs[0].game_loop[0]
 
     if game_loop < target_game_loop:
-      raise ValueError("The game didn't advance to the expected game loop")
+      logging.warning(
+        "We got a earlier observation than we asked for, %d rather than %d.",
+        game_loop, target_game_loop)
     elif game_loop > target_game_loop:
       logging.warning(
         "We got a later observation than we asked for, %d rather than %d.",

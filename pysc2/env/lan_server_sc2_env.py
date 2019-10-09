@@ -41,6 +41,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
                  discount=1.,
                  visualize=False,
                  step_mul=None,
+                 realtime=False,
                  replay_dir=None,
                  controller=None,
                  map_name=None):
@@ -57,6 +58,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
         self._num_agents = 1
         self._discount = discount
         self._step_mul = step_mul or 8
+        self._realtime = realtime
         self._save_replay_episodes = 1 if replay_dir else 0
         self._replay_dir = replay_dir
 
