@@ -446,7 +446,7 @@ class SC2Env(environment.Base):
 
     self._last_score = [0] * self._num_agents
     self._state = environment.StepType.FIRST
-    return self._step()
+    return self._observe(target_game_loop=0)
 
   @sw.decorate("step_env")
   def step(self, actions):
@@ -475,15 +475,36 @@ class SC2Env(environment.Base):
     self._state = environment.StepType.MID
     return self._step()
 
-  def _step(self):
-    with self._metrics.measure_step_time(self._step_mul):
-      self._parallel.run((c.step, self._step_mul) for c in self._controllers)
+  def _step(self, step_mul=None):
+    step_mul = step_mul or self._step_mul
+    if step_mul <= 0:
+      raise ValueError("step_mul should be positive, got {}".format(step_mul))
+    if not self._realtime:
+      with self._metrics.measure_step_time(self._step_mul):
+        self._parallel.run((c.step, self._step_mul) for c in self._controllers)
 
+    return self._observe(target_game_loop=self._episode_steps + step_mul)
+
+  def _observe(self, target_game_loop):
+    # Transform in the thread so it runs while waiting for other observations.
+    def parallel_observe(c, f):
+      obs = c.observe(target_game_loop=target_game_loop)
+      agent_obs = f.transform_obs(obs)
+      game_info = c.game_info()
+      return obs, agent_obs, game_info
     with self._metrics.measure_observation_time():
-      self._obs = self._parallel.run(c.observe for c in self._controllers)
-      agent_obs = [f.transform_obs(o) for f, o in zip(
-          self._features, self._obs)]
-      game_info = self._parallel.run(c.game_info for c in self._controllers)
+      self._obs, agent_obs, game_info = zip(*self._parallel.run(
+        (parallel_observe, c, f)
+        for c, f in zip(self._controllers, self._features)))
+
+    game_loop = self._agent_obs[0].game_loop[0]
+
+    if game_loop < target_game_loop:
+      raise ValueError("The game didn't advance to the expected game loop")
+    elif game_loop > target_game_loop:
+      logging.warning(
+        "We got a later observation than we asked for, %d rather than %d.",
+        game_loop, target_game_loop)
 
     # TODO(tewalds): How should we handle more than 2 agents and the case where
     # the episode can end early for some agents?
@@ -519,8 +540,8 @@ class SC2Env(environment.Base):
       elif cmd == renderer_human.ActionCmd.QUIT:
         raise KeyboardInterrupt("Quit?")
 
-    self._total_steps += self._step_mul
-    self._episode_steps += self._step_mul
+    self._total_steps += agent_obs[0].game_loop[0] - self._episode_steps
+    self._episode_steps = agent_obs[0].game_loop[0]
     if self._episode_length > 0 and self._episode_steps >= self._episode_length:
       self._state = environment.StepType.LAST
       # No change to reward or discount since it's not actually terminal.
