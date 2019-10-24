@@ -844,3 +844,16 @@ class BUFF_ID(Enum):
         CARRYHARVESTABLEVESPENEGEYSERGAS = 273
         CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS = 274
         CARRYHARVESTABLEVESPENEGEYSERGASZERG = 275
+        PermanentlyCloaked = 276
+        RavenScramblerMissile = 277
+        RavenShredderMissileTimeout = 278
+        RavenShredderMissileTint = 279
+        RavenShredderMissileArmorReduction = 280
+        ChronoBoostEnergyCost = 281
+        NexusShieldRechargeOnPylonBehavior = 282
+        NexusShieldRechargeOnPylonBehaviorSecondaryOnTarget = 283
+        InfestorEnsnare = 284
+        InfestorEnsnareMakePrecursorReheightSource = 285
+        NexusShieldOvercharge = 286
+        ParasiticBombDelayTimedLife = 287
+        Transfusion = 288
