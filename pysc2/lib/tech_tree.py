@@ -1,5 +1,5 @@
 from pysc2.lib import RACE, UNIT_TYPEID, UPGRADE_ID, ABILITY_ID 
-from pysc2.lib import data_raw_3_16, data_raw_4_0
+from pysc2.lib.data_raw import get_data_raw
 import distutils.version
 
 class TypeData(object):
@@ -31,6 +31,7 @@ class TechTree(object):
         self.initUpgradeData()
 
     def update_version(self, version):
+        self.data_raw = get_data_raw(version)
         self.updateUnitTypeData(version)
         self.updateUpgradeData(version)
 
@@ -315,7 +316,7 @@ class TechTree(object):
 
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
             self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERDENMP.value] = TypeData(RACE.Zerg, 100, 150, 0, self.fps*120, True, True, False, False, False, False, False, ABILITY_ID.BUILD_LURKERDENMP.value, 0, [ UNIT_TYPEID.ZERG_DRONE.value ], [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [])
-            data_raw = data_raw_4_0
+            data_raw = self.data_raw
             for unit_type in self.m_unitTypeData:
                 mineralCost = data_raw.units[unit_type].mineral_cost
                 gasCost = data_raw.units[unit_type].vespene_cost
@@ -357,9 +358,10 @@ class TechTree(object):
             self.m_upgradeData[UPGRADE_ID.EVOLVEMUSCULARAUGMENTS.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 100, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_MUSCULARAUGMENTS.value, 0, [UNIT_TYPEID.ZERG_HYDRALISKDEN.value], [], [])
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.7.1'):
             self.m_upgradeData[UPGRADE_ID.TUNNELINGCLAWS.value] = TypeData(RACE.Zerg, 100, 100, 0, self.fps * 110, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_TUNNELINGCLAWS.value, 0, [UNIT_TYPEID.ZERG_ROACHWARREN.value], [UNIT_TYPEID.ZERG_LAIR.value, UNIT_TYPEID.ZERG_HIVE.value], [])
-            #TODO: Anabolic Synthesis for Ultralisk?
+            self.m_upgradeData[UPGRADE_ID.EVOLVEANABOLICSYNTHESIS.value] = TypeData(RACE.Zerg, 150, 150, 0, self.fps * 60, False, False, False, False, False, False, False, ABILITY_ID.RESEARCH_EVOLVEANABOLICSYNTHESIS2.value, 0, [UNIT_TYPEID.ZERG_ULTRALISKCAVERN.value], [], [])
+
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
-            data_raw = data_raw_4_0
+            data_raw = self.data_raw
             for upgrade_type in self.m_upgradeData:
                 mineralCost = data_raw.upgrades[upgrade_type].mineral_cost
                 gasCost = data_raw.upgrades[upgrade_type].vespene_cost
