@@ -22,6 +22,9 @@ class TypeData(object):
         self.requiredUnits = requiredUnits
         self.requiredUpgrades = requiredUpgrades
 
+    def __str__(self):
+        return ' '.join([str(self.mineralCost), str(self.gasCost), str(self.supplyCost), str(self.buildTime)])
+
 class TechTree(object):
     def __init__(self):
         self.fps = 16
@@ -186,36 +189,6 @@ class TechTree(object):
         self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERSEER.value] =            TypeData( RACE.Zerg, 50, 50, 0, self.fps*17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERSEER.value, 0,  [UNIT_TYPEID.ZERG_OVERLORD.value, UNIT_TYPEID.ZERG_OVERLORDTRANSPORT.value], [ UNIT_TYPEID.ZERG_LAIR.value ], [] )
         self.m_unitTypeData[UNIT_TYPEID.ZERG_OVERLORDTRANSPORT.value] =   TypeData( RACE.Zerg, 25, 25, 0, self.fps * 17, True, False, False, False, True, False, False, ABILITY_ID.MORPH_OVERLORDTRANSPORT.value, 0, [UNIT_TYPEID.ZERG_OVERLORD.value], [UNIT_TYPEID.ZERG_LAIR.value], [])
 
-    # Set the Mineral / Gas cost of each unit from game core data
-        data_raw = data_raw_3_16
-        for unit_type in self.m_unitTypeData:
-            mineralCost = data_raw.units[unit_type].mineral_cost
-            gasCost = data_raw.units[unit_type].vespene_cost
-            if self.m_unitTypeData[unit_type].race == RACE.Zerg:
-                if (unit_type not in [UNIT_TYPEID.ZERG_LARVA.value,
-                                      UNIT_TYPEID.ZERG_EGG.value,
-                                      UNIT_TYPEID.ZERG_QUEEN.value,
-                                      UNIT_TYPEID.ZERG_NYDUSCANAL.value,
-                                      UNIT_TYPEID.ZERG_ZERGLING.value]):
-                    builder_type = self.m_unitTypeData[unit_type].whatBuilds[0]
-                    mineralCost -= data_raw.units[builder_type].mineral_cost
-                    gasCost -= data_raw.units[builder_type].vespene_cost
-                if (unit_type == UNIT_TYPEID.ZERG_ZERGLING.value):
-                    mineralCost *= 2
-                    gasCost *= 2
-                #if (mineralCost != self.m_unitTypeData[unit_type].mineralCost or
-                #            gasCost != self.m_unitTypeData[unit_type].gasCost):
-                #    print('Data for unit {} inconsistent!'.format(unit_type))
-                self.m_unitTypeData[unit_type].mineralCost = mineralCost
-                self.m_unitTypeData[unit_type].gasCost = gasCost
-
-    # fix the cumulative prices of morphed buildings
-    #    self.m_unitTypeData[UNIT_TYPEID.ZERG_HIVE.value].mineralCost -= self.getUnitData(UNIT_TYPEID.ZERG_LAIR.value).mineralCost
-    #    self.m_unitTypeData[UNIT_TYPEID.ZERG_LAIR.value].mineralCost -= self.getUnitData(UNIT_TYPEID.ZERG_HATCHERY.value).mineralCost
-        self.m_unitTypeData[UNIT_TYPEID.TERRAN_PLANETARYFORTRESS.value].mineralCost -= self.getUnitData(UNIT_TYPEID.TERRAN_COMMANDCENTER.value).mineralCost
-        self.m_unitTypeData[UNIT_TYPEID.TERRAN_ORBITALCOMMAND.value].mineralCost -= self.getUnitData(UNIT_TYPEID.TERRAN_COMMANDCENTER.value).mineralCost
-    #    self.m_unitTypeData[UNIT_TYPEID.ZERG_GREATERSPIRE.value].mineralCost -= self.getUnitData(UNIT_TYPEID.ZERG_SPIRE.value).mineralCost
-
     def initUpgradeData(self):
     # 0 data for null / error return
 
@@ -316,13 +289,14 @@ class TechTree(object):
 
         if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
             self.m_unitTypeData[UNIT_TYPEID.ZERG_LURKERDENMP.value] = TypeData(RACE.Zerg, 100, 150, 0, self.fps*120, True, True, False, False, False, False, False, ABILITY_ID.BUILD_LURKERDENMP.value, 0, [ UNIT_TYPEID.ZERG_DRONE.value ], [ UNIT_TYPEID.ZERG_HYDRALISKDEN.value ], [])
+
             data_raw = self.data_raw
             for unit_type in self.m_unitTypeData:
                 mineralCost = data_raw.units[unit_type].mineral_cost
                 gasCost = data_raw.units[unit_type].vespene_cost
                 supplyCost = data_raw.units[unit_type].food_required
                 buildTime = data_raw.units[unit_type].build_time
-                if self.m_unitTypeData[unit_type].race == RACE.Zerg:
+                if self.m_unitTypeData[unit_type].race == RACE.Zerg and unit_type != UNIT_TYPEID.ZERG_OVERLORDTRANSPORT.value:
                     if (unit_type not in [UNIT_TYPEID.ZERG_LARVA.value,
                                           UNIT_TYPEID.ZERG_EGG.value,
                                           UNIT_TYPEID.ZERG_QUEEN.value,
@@ -342,11 +316,13 @@ class TechTree(object):
                                           UNIT_TYPEID.ZERG_OVERSEER.value]):
                         builder_type = self.m_unitTypeData[unit_type].whatBuilds[0]
                         supplyCost -= data_raw.units[builder_type].food_required
-                    #if (mineralCost != self.m_unitTypeData[unit_type].mineralCost
+                    # if (mineralCost != self.m_unitTypeData[unit_type].mineralCost
                     #        or gasCost != self.m_unitTypeData[unit_type].gasCost
                     #        or supplyCost != self.m_unitTypeData[unit_type].supplyCost
                     #        or buildTime != self.m_unitTypeData[unit_type].buildTime):
-                    #    print('Data for unit {} inconsistent!'.format(unit_type))
+                    #    print('Data for unit {} inconsistent!'.format(UNIT_TYPEID(unit_type)))
+                    #    print(self.m_unitTypeData[unit_type])
+                    #    print(mineralCost, gasCost, supplyCost, buildTime)
                     self.m_unitTypeData[unit_type].mineralCost = mineralCost
                     self.m_unitTypeData[unit_type].gasCost = gasCost
                     self.m_unitTypeData[unit_type].supplyCost = supplyCost
@@ -377,4 +353,4 @@ class TechTree(object):
 
 if __name__ == "__main__":
   TT = TechTree()
-  TT.updateUnitTypeData('4.0.2')
+  TT.update_version('4.7.1')
