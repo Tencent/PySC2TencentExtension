@@ -455,7 +455,7 @@ class SC2Env(environment.Base):
     return self._observe(target_game_loop=0)
 
   @sw.decorate("step_env")
-  def step(self, actions):
+  def step(self, actions, step_mul=None):
     """Apply actions, step the world forward, and return observations."""
     # TODO: support hybrid actions for each player
     if self._state == environment.StepType.LAST:
@@ -479,15 +479,15 @@ class SC2Env(environment.Base):
     #       for c, o, a in zip(self._controllers, self._obs, actions))
 
     self._state = environment.StepType.MID
-    return self._step()
+    return self._step(step_mul)
 
   def _step(self, step_mul=None):
     step_mul = step_mul or self._step_mul
     if step_mul <= 0:
       raise ValueError("step_mul should be positive, got {}".format(step_mul))
     if not self._realtime:
-      with self._metrics.measure_step_time(self._step_mul):
-        self._parallel.run((c.step, self._step_mul) for c in self._controllers)
+      with self._metrics.measure_step_time(step_mul):
+        self._parallel.run((c.step, step_mul) for c in self._controllers)
 
     return self._observe(target_game_loop=self._episode_steps + step_mul)
 
