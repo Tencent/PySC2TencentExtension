@@ -571,8 +571,10 @@ class SC2Env(environment.Base):
     return tuple(environment.TimeStep(step_type=self._state,
                                       reward=r * self._score_multiplier,
                                       discount=discount, observation=o,
-                                      game_info=info)
-                 for r, o, info in zip(reward, agent_obs, game_info))
+                                      game_info=info,
+                                      actions=obs.actions,
+                                      action_errors=obs.action_errors)
+                 for r, o, info, obs in zip(reward, agent_obs, game_info, self._obs))
 
   def send_chat_messages(self, messages):
     """Useful for logging messages into the replay."""
