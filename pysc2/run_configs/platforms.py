@@ -64,6 +64,7 @@ VERSIONS = {ver.game_version: ver for ver in [
     lib.Version("4.8.2", 71663, "FE90C92716FC6F8F04B74268EC369FA5", None),
     lib.Version("4.8.3", 72282, "0F14399BBD0BA528355FF4A8211F845B", None),
     lib.Version("4.8.4", 73286, "CD040C0675FD986ED37A4CA3C88C8EB5", None),
+    lib.Version("4.10.0", 75689, "B89B5D6FA7CBF6452E721311BFBC6CB2", None),
 ]}
 
 flags.DEFINE_enum("sc2_version", None, sorted(VERSIONS.keys()),
