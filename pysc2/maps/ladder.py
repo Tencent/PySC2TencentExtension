@@ -40,6 +40,8 @@ ladder_seasons = [
     "Ladder2018Season3",
     "Ladder2018Season4",
     "Ladder2019Season1",
+    "Ladder2019Season2",
+    "Ladder2019Season3",
 ]
 
 for name in ladder_seasons:
@@ -54,6 +56,7 @@ ladder_maps = [
     ("AbyssalReef",          Ladder2017Season4, "AbyssalReefLE", 2),
     ("AcidPlant",            Ladder2018Season3, "AcidPlantLE", 2),
     ("Acolyte",              Ladder2017Season3, "AcolyteLE", 2),
+    ("Acropolis",            Ladder2019Season3, "AcropolisLE", 2),
     ("AscensiontoAiur",      Ladder2017Season4, "AscensiontoAiurLE", 2),
     ("Automaton",            Ladder2019Season1, "AutomatonLE", 2),
     ("Backwater",            Ladder2018Season1, "BackwaterLE", 2),
@@ -88,6 +91,8 @@ ladder_maps = [
     ("Redshift",             Ladder2018Season2, "(2)RedshiftLE", 2),
     ("Sequencer",            Ladder2017Season2, "SequencerLE", 2),
     ("Stasis",               Ladder2018Season4, "StasisLE", 2),
+    ("Thunderbird",          Ladder2019Season3, "ThunderbirdLE", 2),
+    ("TurboCruise84",        Ladder2019Season2, "TurboCruise84LE", 2),
     ("YearZero",             Ladder2019Season1, "YearZeroLE", 2),
     ("AbyssalReefRand",      Ladder2017Season4, "AbyssalReefRand", 2),
     ("AcidPlantRand",        Ladder2018Season1, "AcidPlantRand", 2),
