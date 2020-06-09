@@ -862,3 +862,4 @@ class BUFF_ID(Enum):
         NexusShieldOvercharge = 286
         ParasiticBombDelayTimedLife = 287
         Transfusion = 288
+        InhibitorZoneTemporalField = 289
