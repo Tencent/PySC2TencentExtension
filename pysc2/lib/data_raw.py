@@ -6,8 +6,8 @@ import pkgutil
 def get_data_raw(version):
     data_raw = sc_pb.ResponseData()
     if distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.7.1'):
-        data_4_7_1 = pkgutil.get_data('pysc2', 'lib/data/data_raw_4.7.1.serialized')
-        data_raw.ParseFromString(data_4_7_1)
+        data = pkgutil.get_data('pysc2', f'lib/data/data_raw_{version}.serialized')
+        data_raw.ParseFromString(data)
     elif distutils.version.LooseVersion(version) >= distutils.version.LooseVersion('4.0'):
         data_4_0 = pkgutil.get_data('pysc2', 'lib/data/data_raw_4_0.serialized')
         data_raw.ParseFromString(data_4_0)
