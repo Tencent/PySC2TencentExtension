@@ -330,7 +330,7 @@ class SC2Env(environment.Base):
           interface.feature_layer.resolution)
       agent_interface_format.feature_dimensions.minimap.assign_to(
           interface.feature_layer.minimap_resolution)
-      interface.crop_to_playable_area = crop_to_playable_area
+      interface.feature_layer.crop_to_playable_area = crop_to_playable_area
 
     if agent_interface_format.rgb_dimensions:
       agent_interface_format.rgb_dimensions.screen.assign_to(
