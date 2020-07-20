@@ -128,7 +128,7 @@ class SC2Env(environment.Base):
                random_seed=None,
                disable_fog=False,
                crop_to_playable_area=False,
-               game_info_each_step=False,
+               update_game_info=False,
                version=None):
     """Create a SC2 Env.
 
@@ -239,7 +239,7 @@ class SC2Env(environment.Base):
     self._random_seed = random_seed
     self._disable_fog = disable_fog
     self._version = version
-    self._game_info_each_step = game_info_each_step
+    self._update_game_info = update_game_info
 
     if score_index is None:
       self._score_index = map_inst.score_index
@@ -283,6 +283,7 @@ class SC2Env(environment.Base):
 
   def _finalize(self, agent_interface_formats, interfaces, visualize):
     game_info = self._parallel.run(c.game_info for c in self._controllers)
+    self._game_info = game_info
     if not self._map_name:
       self._map_name = game_info[0].map_name
 
@@ -500,12 +501,14 @@ class SC2Env(environment.Base):
     def parallel_observe(c, f):
       obs = c.observe(target_game_loop=target_game_loop)
       agent_obs = f.transform_obs(obs)
-      game_info = c.game_info() if self._game_info_each_step else None
+      game_info = c.game_info() if self._update_game_info else None
       return obs, agent_obs, game_info
     with self._metrics.measure_observation_time():
       self._obs, agent_obs, game_info = zip(*self._parallel.run(
         (parallel_observe, c, f)
         for c, f in zip(self._controllers, self._features)))
+    if not self._update_game_info:
+      game_info = self._game_info
 
     game_loop = agent_obs[0].game_loop[0]
 
