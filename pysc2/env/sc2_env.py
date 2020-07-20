@@ -128,6 +128,7 @@ class SC2Env(environment.Base):
                random_seed=None,
                disable_fog=False,
                crop_to_playable_area=False,
+               game_info_each_step=False,
                version=None):
     """Create a SC2 Env.
 
@@ -238,6 +239,7 @@ class SC2Env(environment.Base):
     self._random_seed = random_seed
     self._disable_fog = disable_fog
     self._version = version
+    self._game_info_each_step = game_info_each_step
 
     if score_index is None:
       self._score_index = map_inst.score_index
@@ -498,7 +500,7 @@ class SC2Env(environment.Base):
     def parallel_observe(c, f):
       obs = c.observe(target_game_loop=target_game_loop)
       agent_obs = f.transform_obs(obs)
-      game_info = c.game_info()
+      game_info = c.game_info() if self._game_info_each_step else None
       return obs, agent_obs, game_info
     with self._metrics.measure_observation_time():
       self._obs, agent_obs, game_info = zip(*self._parallel.run(
