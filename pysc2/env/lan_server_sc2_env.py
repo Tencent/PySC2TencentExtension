@@ -44,6 +44,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
                  realtime=False,
                  replay_dir=None,
                  controller=None,
+                 update_game_info=False,
                  map_name=None):
         if _only_use_kwargs:
             raise ValueError(
@@ -67,6 +68,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
         self._episode_length = 0  # No limit.
 
         self._map_name = map_name
+        self._update_game_info = update_game_info
 
         self._run_config = run_configs.get()
         self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
