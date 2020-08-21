@@ -210,6 +210,7 @@ class LanSC2Env(sc2_env.SC2Env):
                visualize=False,
                step_mul=None,
                realtime=False,
+               update_game_info=False,
                replay_dir=None):
     """Create a SC2 Env that connects to a remote instance of the game.
 
@@ -269,6 +270,7 @@ class LanSC2Env(sc2_env.SC2Env):
     self._score_index = -1  # Win/loss only.
     self._score_multiplier = 1
     self._episode_length = 0  # No limit.
+    self._update_game_info = update_game_info
 
     self._run_config = run_configs.get()
     self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
