@@ -670,6 +670,7 @@ class ABILITY_ID(Enum):
         RESEARCH_ZERGMISSILEWEAPONSLEVEL1 = 1192  # Target: None.
         RESEARCH_ZERGMISSILEWEAPONSLEVEL2 = 1193  # Target: None.
         RESEARCH_ZERGMISSILEWEAPONSLEVEL3 = 1194  # Target: None.
+        RESEARCH_ADAPTIVETALONS = 3709  # Target: None.
         SCAN_MOVE = 19    # Target: Unit Point.
         STOP = 3665  # Target: None.
         STOP_BUILDING = 2057  # Target: None.
@@ -839,6 +840,7 @@ class UPGRADE_ID(Enum):
         SMARTSERVOS = 289
         RAPIDFIRELAUNCHERS = 291
         ENHANCEDMUNITIONS = 292
+        ADAPTIVETALONS = 293
 
 class BUFF_ID(Enum):
         INVALID = 0
