@@ -30,6 +30,7 @@ from pysc2.env import environment
 from pysc2.lib import actions as actions_lib
 from pysc2.lib import features
 from pysc2.lib import metrics
+from pysc2.lib import protocol
 from pysc2.lib import renderer_human
 from pysc2.lib import run_parallel
 from pysc2.lib import stopwatch
@@ -474,7 +475,19 @@ class SC2Env(environment.Base):
         item = (c.acts, a)
       funcs_with_args.append(item)
 
-    self._parallel.run(funcs_with_args)
+    try:
+      self._parallel.run(funcs_with_args)
+    except protocol.ProtocolError as e:
+      if self._realtime:
+        print('Game may be ended after last observe, try to save replay...')
+        if (self._save_replay_episodes > 0 and
+            self._episode_count % self._save_replay_episodes == 0):
+          try:
+            self.save_replay(self._replay_dir)
+          except Exception as save_error:
+            print(save_error)
+      raise e
+
     # if self._raw:
     #   self._parallel.run([(self._controllers[0].acts, actions)])
     #   #self._parallel.run((c.act, a) for c, a in zip(self._controllers, actions))

@@ -289,6 +289,8 @@ class LanSC2Env(sc2_env.SC2Env):
     self._tcp_conn, settings = tcp_client(Addr(host, config_port))
 
     self._map_name = settings["map_name"]
+    if "realtime" in settings:
+      self._realtime = settings["realtime"]
 
     if settings["remote"]:
       self._udp_sock = udp_server(
