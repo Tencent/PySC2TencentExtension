@@ -458,6 +458,7 @@ class SC2Env(environment.Base):
 
     self._last_score = [0] * self._num_agents
     self._state = environment.StepType.FIRST
+    self._game_info = self._parallel.run(c.game_info for c in self._controllers)
     return self._observe(target_game_loop=0)
 
   @sw.decorate("step_env")
