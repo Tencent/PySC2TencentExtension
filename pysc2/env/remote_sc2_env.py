@@ -53,6 +53,11 @@ class RemoteSC2Env(sc2_env.SC2Env):
                visualize=False,
                step_mul=None,
                realtime=False,
+               crop_to_playable_area=False,
+               show_cloaked=False,
+               show_burrowed_shadows=False,
+               show_placeholders=False,
+               raw_affects_selection=True,
                replay_dir=None):
     """Create a SC2 Env that connects to a remote instance of the game.
 
@@ -118,7 +123,12 @@ class RemoteSC2Env(sc2_env.SC2Env):
     self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
 
     interface = self._get_interface(
-        agent_interface_format=agent_interface_format, require_raw=True)
+        agent_interface_format=agent_interface_format,
+        require_raw=True, crop_to_playable_area=crop_to_playable_area,
+        show_cloaked=show_cloaked,
+        show_burrowed_shadows=show_burrowed_shadows,
+        show_placeholders=show_placeholders,
+        raw_affects_selection=raw_affects_selection)
 
     self._connect_remote(host, host_port, lan_port, race, map_inst, interface)
 

@@ -129,6 +129,10 @@ class SC2Env(environment.Base):
                random_seed=None,
                disable_fog=False,
                crop_to_playable_area=False,
+               show_cloaked=False,
+               show_burrowed_shadows=False,
+               show_placeholders=False,
+               raw_affects_selection=True,
                update_game_info=False,
                version=None):
     """Create a SC2 Env.
@@ -273,7 +277,12 @@ class SC2Env(environment.Base):
     for i, interface_format in enumerate(agent_interface_format):
       # require_raw = visualize and (i == 0)
       require_raw = True
-      interfaces.append(self._get_interface(interface_format, require_raw, crop_to_playable_area))
+      interfaces.append(self._get_interface(interface_format, require_raw,
+                                            crop_to_playable_area,
+                                            show_cloaked,
+                                            show_burrowed_shadows,
+                                            show_placeholders,
+                                            raw_affects_selection))
 
     if self._num_agents == 1:
       self._launch_sp(map_inst, interfaces[0])
@@ -322,25 +331,34 @@ class SC2Env(environment.Base):
     logging.info("Environment is ready on map: %s", self._map_name)
 
   @staticmethod
-  def _get_interface(agent_interface_format, require_raw, crop_to_playable_area=False):
+  def _get_interface(agent_interface_format, require_raw,
+                     crop_to_playable_area=False, show_cloaked=False,
+                     show_burrowed_shadows=False, show_placeholders=False,
+                     raw_affects_selection=True):
     interface = sc_pb.InterfaceOptions(
-        raw=(agent_interface_format.use_feature_units or require_raw),
-        score=True, raw_affects_selection=True, raw_crop_to_playable_area=crop_to_playable_area)
+      raw=(agent_interface_format.use_feature_units or require_raw),
+      score=True, raw_affects_selection=raw_affects_selection,
+      raw_crop_to_playable_area=crop_to_playable_area,
+      show_cloaked=show_cloaked, show_burrowed_shadows=show_burrowed_shadows,
+      show_placeholders=show_placeholders,
+    )
 
-    if agent_interface_format.feature_dimensions:
-      interface.feature_layer.width = (
+    if agent_interface_format is not None:
+      if agent_interface_format.feature_dimensions:
+        interface.feature_layer.width = (
           agent_interface_format.camera_width_world_units)
-      agent_interface_format.feature_dimensions.screen.assign_to(
+        agent_interface_format.feature_dimensions.screen.assign_to(
           interface.feature_layer.resolution)
-      agent_interface_format.feature_dimensions.minimap.assign_to(
+        agent_interface_format.feature_dimensions.minimap.assign_to(
           interface.feature_layer.minimap_resolution)
-      interface.feature_layer.crop_to_playable_area = crop_to_playable_area
+        interface.feature_layer.crop_to_playable_area = crop_to_playable_area
 
-    if agent_interface_format.rgb_dimensions:
-      agent_interface_format.rgb_dimensions.screen.assign_to(
+      if agent_interface_format.rgb_dimensions:
+        agent_interface_format.rgb_dimensions.screen.assign_to(
           interface.render.resolution)
-      agent_interface_format.rgb_dimensions.minimap.assign_to(
+        agent_interface_format.rgb_dimensions.minimap.assign_to(
           interface.render.minimap_resolution)
+        interface.render.crop_to_playable_area = crop_to_playable_area
 
     return interface
 

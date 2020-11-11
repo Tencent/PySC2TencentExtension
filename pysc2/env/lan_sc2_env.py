@@ -205,6 +205,10 @@ class LanSC2Env(sc2_env.SC2Env):
                race=None,
                agent_interface_format=None,
                crop_to_playable_area=False,
+               show_cloaked=False,
+               show_burrowed_shadows=False,
+               show_placeholders=False,
+               raw_affects_selection=True,
                agent_name=None,
                discount=1.,
                visualize=False,
@@ -277,7 +281,11 @@ class LanSC2Env(sc2_env.SC2Env):
 
     interface = self._get_interface(
         agent_interface_format=agent_interface_format,
-        require_raw=True, crop_to_playable_area=crop_to_playable_area)
+        require_raw=True, crop_to_playable_area=crop_to_playable_area,
+        show_cloaked=show_cloaked, show_burrowed_shadows=show_burrowed_shadows,
+        show_placeholders=show_placeholders,
+        raw_affects_selection=raw_affects_selection
+    )
     self._agent_names = [agent_name]
 
     self._launch_remote(host, config_port, race, interface)
