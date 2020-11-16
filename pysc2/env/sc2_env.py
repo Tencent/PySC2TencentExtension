@@ -22,6 +22,7 @@ from absl import logging
 import time
 
 import enum
+import numpy as np
 import portpicker
 
 from pysc2 import maps
@@ -30,6 +31,7 @@ from pysc2.env import environment
 from pysc2.lib import actions as actions_lib
 from pysc2.lib import features
 from pysc2.lib import metrics
+from pysc2.lib import named_array
 from pysc2.lib import protocol
 from pysc2.lib import renderer_human
 from pysc2.lib import run_parallel
@@ -78,6 +80,25 @@ parse_agent_interface_format = features.parse_agent_interface_format
 
 Agent = collections.namedtuple("Agent", ["race"])
 Bot = collections.namedtuple("Bot", ["race", "difficulty"])
+
+
+def ext_score(obs):
+  score_details = obs.observation.score.score_details
+  return named_array.NamedNumpyArray([
+      obs.observation.score.score,
+      score_details.idle_production_time,
+      score_details.idle_worker_time,
+      score_details.total_value_units,
+      score_details.total_value_structures,
+      score_details.killed_value_units,
+      score_details.killed_value_structures,
+      score_details.collected_minerals,
+      score_details.collected_vespene,
+      score_details.collection_rate_minerals,
+      score_details.collection_rate_vespene,
+      score_details.spent_minerals,
+      score_details.spent_vespene,
+  ], names=features.ScoreCumulative, dtype=np.int32)
 
 
 def _pick_unused_ports(num_ports, retry_interval_secs=3, retry_attempts=5):
@@ -134,6 +155,7 @@ class SC2Env(environment.Base):
                show_placeholders=False,
                raw_affects_selection=True,
                update_game_info=False,
+               use_pysc2_feature=True,
                version=None):
     """Create a SC2 Env.
 
@@ -273,11 +295,11 @@ class SC2Env(environment.Base):
           "The number of entries in agent_interface_format should "
           "correspond 1-1 with the number of agents.")
 
+    self.raw = not use_pysc2_feature
+
     interfaces = []
     for i, interface_format in enumerate(agent_interface_format):
-      # require_raw = visualize and (i == 0)
-      require_raw = True
-      interfaces.append(self._get_interface(interface_format, require_raw,
+      interfaces.append(self._get_interface(interface_format, self.raw,
                                             crop_to_playable_area,
                                             show_cloaked,
                                             show_burrowed_shadows,
@@ -303,14 +325,16 @@ class SC2Env(environment.Base):
             "Actual interface options don't match requested options:\n"
             "Requested:\n%s\n\nActual:\n%s", interface, g.options)
 
-    self._features = [
-        features.features_from_game_info(
-            game_info=g,
-            use_feature_units=agent_interface_format.use_feature_units,
-            action_space=agent_interface_format.action_space,
-            hide_specific_actions=agent_interface_format.hide_specific_actions)
-        for g, agent_interface_format in zip(game_info, agent_interface_formats)
-    ]
+    self._features = [None for c in self._controllers]
+    if not self.raw:
+      self._features = [
+          features.features_from_game_info(
+              game_info=g,
+              use_feature_units=agent_interface_format.use_feature_units,
+              action_space=agent_interface_format.action_space,
+              hide_specific_actions=agent_interface_format.hide_specific_actions)
+          for g, agent_interface_format in zip(game_info, agent_interface_formats)
+      ]
 
     if visualize:
       static_data = self._controllers[0].data()
@@ -447,11 +471,17 @@ class SC2Env(environment.Base):
 
   def observation_spec(self):
     """Look at Features for full specs."""
-    return tuple(f.observation_spec() for f in self._features)
+    if not self.raw:
+      return tuple(f.observation_spec() for f in self._features)
+    else:
+      return [None] * self._num_agents
 
   def action_spec(self):
     """Look at Features for full specs."""
-    return tuple(f.action_spec() for f in self._features)
+    if not self.raw:
+      return tuple(f.action_spec() for f in self._features)
+    else:
+      return [None] * self._num_agents
 
   def _restart(self):
     if len(self._controllers) == 1:
@@ -479,20 +509,24 @@ class SC2Env(environment.Base):
     self._game_info = self._parallel.run(c.game_info for c in self._controllers)
     return self._observe(target_game_loop=0)
 
-  @sw.decorate("step_env")
-  def step(self, actions, step_mul=None):
-    """Apply actions, step the world forward, and return observations."""
+  def push_action(self, actions):
     # TODO: support hybrid actions for each player
     if self._state == environment.StepType.LAST:
       return self.reset()
 
     funcs_with_args = []
-    for c, f, o, a in zip(self._controllers, self._features, self._obs, actions):
-      if not type(a) == list:  # a single command, must be pysc2 func-call action
-        item = (c.act, f.transform_action(o.observation, a))
-      else:  # presume it's a list of pb actions
+    if not self.raw:
+      for c, f, o, a in zip(self._controllers, self._features, self._obs, actions):
+        if not type(a) == list:  # a single command, must be pysc2 func-call action
+          item = (c.act, f.transform_action(o.observation, a))
+        else:  # presume it's a list of pb actions
+          item = (c.acts, a)
+        funcs_with_args.append(item)
+    else:
+      for c, o, a in zip(self._controllers, self._obs, actions):
+        assert type(a) == list
         item = (c.acts, a)
-      funcs_with_args.append(item)
+        funcs_with_args.append(item)
 
     try:
       self._parallel.run(funcs_with_args)
@@ -506,16 +540,12 @@ class SC2Env(environment.Base):
           except Exception as save_error:
             print(save_error)
       raise e
-
-    # if self._raw:
-    #   self._parallel.run([(self._controllers[0].acts, actions)])
-    #   #self._parallel.run((c.act, a) for c, a in zip(self._controllers, actions))
-    # else:
-    #   self._parallel.run(
-    #       (c.act, self._features.transform_action(o.observation, a))
-    #       for c, o, a in zip(self._controllers, self._obs, actions))
-
     self._state = environment.StepType.MID
+
+  @sw.decorate("step_env")
+  def step(self, actions, step_mul=None):
+    """Apply actions, step the world forward, and return observations."""
+    self.push_action(actions)
     return self._step(step_mul)
 
   def _step(self, step_mul=None):
@@ -532,7 +562,7 @@ class SC2Env(environment.Base):
     # Transform in the thread so it runs while waiting for other observations.
     def parallel_observe(c, f):
       obs = c.observe(target_game_loop=target_game_loop)
-      agent_obs = f.transform_obs(obs)
+      agent_obs = obs.observation if f is None else f.transform_obs(obs)
       game_info = c.game_info() if self._update_game_info else None
       return obs, agent_obs, game_info
     with self._metrics.measure_observation_time():
@@ -542,7 +572,7 @@ class SC2Env(environment.Base):
     if not self._update_game_info:
       game_info = self._game_info
 
-    game_loop = agent_obs[0].game_loop[0]
+    game_loop = self._obs[0].observation.game_loop
 
     if game_loop < target_game_loop:
       logging.warning(
@@ -567,7 +597,10 @@ class SC2Env(environment.Base):
             outcome[i] = possible_results.get(result.result, 0)
 
     if self._score_index >= 0:  # Game score, not win/loss reward.
-      cur_score = [o["score_cumulative"][self._score_index] for o in agent_obs]
+      if not self.raw:
+        cur_score = [o["score_cumulative"][self._score_index] for o in agent_obs]
+      else:
+        cur_score = [ext_score(o)[self._score_index] for o in self._obs]
       if self._episode_steps == 0:  # First reward is always 0.
         reward = [0] * self._num_agents
       else:
@@ -587,8 +620,8 @@ class SC2Env(environment.Base):
       elif cmd == renderer_human.ActionCmd.QUIT:
         raise KeyboardInterrupt("Quit?")
 
-    self._total_steps += agent_obs[0].game_loop[0] - self._episode_steps
-    self._episode_steps = agent_obs[0].game_loop[0]
+    self._total_steps += game_loop - self._episode_steps
+    self._episode_steps = game_loop
     if self._episode_length > 0 and self._episode_steps >= self._episode_length:
       self._state = environment.StepType.LAST
       # No change to reward or discount since it's not actually terminal.
@@ -597,16 +630,20 @@ class SC2Env(environment.Base):
       if (self._save_replay_episodes > 0 and
           self._episode_count % self._save_replay_episodes == 0):
         self.save_replay(self._replay_dir)
+      if not self.raw:
+        score_0 = [o["score_cumulative"][0] for o in agent_obs]
+      else:
+        score_0 = [ext_score(o)[0] for o in self._obs]
       logging.info(("Episode %s finished after %s game steps. "
                     "Outcome: %s, reward: %s, score: %s"),
                    self._episode_count, self._episode_steps, outcome, reward,
-                   [o["score_cumulative"][0] for o in agent_obs])
-
-    for o, obs in zip(agent_obs, self._obs):  # expose same data structure with raw_pb
-      o["score"] = obs.observation.score
-      o["player_common"] = obs.observation.player_common
-      o['ui_data'] = obs.observation.ui_data
-      o["abilities"] = obs.observation.abilities
+                   score_0)
+    if not self.raw:
+      for o, obs in zip(agent_obs, self._obs):  # expose same data structure with raw_pb
+        o["score"] = obs.observation.score
+        o["player_common"] = obs.observation.player_common
+        o["ui_data"] = obs.observation.ui_data
+        o["abilities"] = obs.observation.abilities
     return tuple(environment.TimeStep(step_type=self._state,
                                       reward=r * self._score_multiplier,
                                       discount=discount, observation=o,
