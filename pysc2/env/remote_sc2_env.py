@@ -58,6 +58,8 @@ class RemoteSC2Env(sc2_env.SC2Env):
                show_burrowed_shadows=False,
                show_placeholders=False,
                raw_affects_selection=True,
+               use_pysc2_feature=True,
+               update_game_info=False,
                replay_dir=None):
     """Create a SC2 Env that connects to a remote instance of the game.
 
@@ -114,6 +116,8 @@ class RemoteSC2Env(sc2_env.SC2Env):
     self._realtime = realtime
     self._save_replay_episodes = 1 if replay_dir else 0
     self._replay_dir = replay_dir
+    self._update_game_info = update_game_info
+    self.raw = not use_pysc2_feature
 
     self._score_index = -1  # Win/loss only.
     self._score_multiplier = 1

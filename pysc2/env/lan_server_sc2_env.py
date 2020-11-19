@@ -50,6 +50,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
                  show_burrowed_shadows=False,
                  show_placeholders=False,
                  raw_affects_selection=True,
+                 use_pysc2_feature=True,
                  map_name=None):
         if _only_use_kwargs:
             raise ValueError(
@@ -74,6 +75,7 @@ class LanServerSC2Env(sc2_env.SC2Env):
 
         self._map_name = map_name
         self._update_game_info = update_game_info
+        self.raw = not use_pysc2_feature
 
         self._run_config = run_configs.get()
         self._parallel = run_parallel.RunParallel()  # Needed for multiplayer.
