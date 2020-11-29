@@ -1,8 +1,8 @@
 # Tencent AI Lab PySC2 Extension
 **Note: the original Deepmind PySC2 README can be found [here](https://github.com/deepmind/pysc2/blob/master/README.md).**
 
-**Note: Current commit (>= `502919a` 2020/11/9) works for TStarBot-X; 
-To run with the old TStarBot1 and TStarBot2, please revert to the commit `4f790218` 2019/5/115**
+**Note: Current commit (>= `5042919a` 2020/11/19) works for TStarBot-X; 
+To run with the old TStarBot1 and TStarBot2, please revert to the commit `4f790218` 2019/5/15**
 
 Besides the "feature_layer" observations/actions interface, 
 this Tencent AI Lab fork also exposes the "raw" interface of [`s2client-proto`](https://github.com/Blizzard/s2client-proto) to enable a per-unit-control.
